@@ -7827,7 +7827,7 @@ li > .PromoA {
   padding-bottom: 0;
 }
 [data-module-background="gray"] .LeadPromo:before {
-  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKAQMAAAC3/F3+AAAABlBMVEX////CwsJLT4cAAAAADUlEQVQI12PACQ4AEQAD3gGB5vz/GAAAAABJRU5ErkJggg==")
+  background: url("")
     repeat 0 0/5px 5px;
   border-top: 170px solid #fff;
   content: "";
@@ -11681,4 +11681,10 @@ body {
   --breakingTextColor: #ffffff;
 
   --sectionTextColor: #80241e;
+}
+
+#pie-chart-image{
+  width: 100%;
+  object-fit: scale-down;
+  background-repeat: norepeat;
 }
