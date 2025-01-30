@@ -11682,3 +11682,9 @@ body {
 
   --sectionTextColor: #80241e;
 }
+
+.pie-chart-img{
+  background-repeat: nopeat;
+  width: 100%;
+  object-fit: scale-down;
+}
