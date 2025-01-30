@@ -740,11 +740,7 @@
   },
   function (t, e, i) {
     var n, o;
-    /*!
-     * getSize v2.0.3
-     * measure size of elements
-     * MIT license
-     */ window,
+    window,
       void 0 ===
         (o =
           "function" ==
@@ -1377,16 +1373,6 @@
   ,
   function (t, e, i) {
     var n, o;
-    /*!
-     * Unipointer v2.3.0
-     * base class for doing one thing with pointer event
-     * MIT license
-     */
-    /*!
-     * Unipointer v2.3.0
-     * base class for doing one thing with pointer event
-     * MIT license
-     */
     !(function (s, r) {
       (n = [i(1)]),
         void 0 ===
@@ -1533,16 +1519,7 @@
   },
   function (t, e, i) {
     var n, o, s;
-    /*!
-     * Flickity v2.2.0
-     * Touch, responsive, flickable carousels
-     *
-     * Licensed GPLv3 for open source use
-     * or Flickity Commercial License for commercial use
-     *
-     * https://flickity.metafizzy.co
-     * Copyright 2015-2018 Metafizzy
-     */ window,
+     window,
       (o = [i(4), i(29), i(30), i(31), i(32), i(33), i(34)]),
       void 0 ===
         (s =
@@ -1783,16 +1760,6 @@
   },
   function (t, e, i) {
     var n, o;
-    /*!
-     * Unidragger v2.3.0
-     * Draggable base class
-     * MIT license
-     */
-    /*!
-     * Unidragger v2.3.0
-     * Draggable base class
-     * MIT license
-     */
     !(function (s, r) {
       (n = [i(6)]),
         void 0 ===
@@ -1936,16 +1903,6 @@
   ,
   function (t, e, i) {
     var n, o;
-    /*!
-     * imagesLoaded v4.1.4
-     * JavaScript is all like "You images are done yet or what?"
-     * MIT License
-     */
-    /*!
-     * imagesLoaded v4.1.4
-     * JavaScript is all like "You images are done yet or what?"
-     * MIT License
-     */
     !(function (s, r) {
       "use strict";
       (n = [i(1)]),
@@ -2144,13 +2101,7 @@
   },
   function (t, e, i) {
     var n, o, s;
-    /*!
-     * Masonry v4.2.2
-     * Cascading grid layout library
-     * https://masonry.desandro.com
-     * MIT License
-     * by David DeSandro
-     */ window,
+ window,
       (o = [i(36), i(3)]),
       void 0 ===
         (s =
@@ -2288,16 +2239,6 @@
   function (t, e, i) {},
   function (t, e, i) {
     var n, o, s;
-    /*!
-     * Flickity v2.2.1
-     * Touch, responsive, flickable carousels
-     *
-     * Licensed GPLv3 for open source use
-     * or Flickity Commercial License for commercial use
-     *
-     * https://flickity.metafizzy.co
-     * Copyright 2015-2019 Metafizzy
-     */ window,
       (o = [i(2), i(20), i(21), i(22), i(23), i(24), i(25)]),
       void 0 ===
         (s =
@@ -4386,10 +4327,8 @@
   },
   function (t, e, i) {
     var n, o, s;
-    /*!
-     * Flickity hash v1.0.3
-     * Enable hash navigation for Flickity
-     */ window,
+
+    window,
       (o = [i(7)]),
       void 0 ===
         (s =
@@ -4462,16 +4401,7 @@
   },
   function (t, e, i) {
     var n, o;
-    /*!
-     * Outlayer v2.1.1
-     * the brains and guts of a layout library
-     * MIT license
-     */
-    /*!
-     * Outlayer v2.1.1
-     * the brains and guts of a layout library
-     * MIT license
-     */
+
     !(function (s, r) {
       "use strict";
       (n = [i(1), i(3), i(0), i(37)]),
