@@ -13,9 +13,8 @@ companies = companies_file.get("companies")
 
 companies_data = []
 
-for company in companies:
-  site = company
-  response = requests.get(site)
+for company_url in companies:
+  response = requests.get(company_url)
   scraper = BeautifulSoup(response.text, "html.parser")
   
   most_recent_filing = scraper.find('span', class_="group-hover:bg-white group-hover:relative group-hover:px-1 group-hover:-ml-1 group-hover:rounded group-hover:shadow")
@@ -53,13 +52,9 @@ def most_stocks_held():
           all_stocks.extend(stock_list.split(', '))
 
   stock_counts = Counter(all_stocks)
-
   stock_counts_df = pandas.DataFrame(stock_counts.items(), columns=['Stock', 'Count'])
-
   sorted_stock_counts_df = stock_counts_df.sort_values(by='Count', ascending=False)
-
   sorted_stock_counts_df = sorted_stock_counts_df.reset_index(drop=True)
-
   sorted_stock_counts_df.index = sorted_stock_counts_df.index + 1
-
+  
   print(sorted_stock_counts_df)
