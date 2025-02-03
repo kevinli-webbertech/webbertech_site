@@ -4,8 +4,6 @@ from collections import Counter
 from bs4 import BeautifulSoup
 import pandas as pandas
 
-
-
 with open("13F/13f-urls.json","r") as urls:
    companies_file = json.load(urls)
 
