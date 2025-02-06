@@ -1,0 +1,9 @@
+#page_header{
+  text-align: center;
+  padding-bottom: 50px;
+  text-decoration: underline;
+}
+
+#doctors_by_practice_img{
+  border: 1px solid black;
+}
