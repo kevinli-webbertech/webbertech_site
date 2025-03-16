@@ -3,60 +3,65 @@ import yfinance as yf
 import talib
 import backtrader as bt
 
-# ✅ Step 1: Download Data (2020-01-01 to 2024-03-15)
-ticker = "AAPL"
-df = yf.download(ticker, start="2020-01-01", end="2024-03-15", auto_adjust=False)
+# ✅ Step 1: Download Data
+ticker = "TSLA"
+df = yf.download(ticker, start="2020-01-01", end="2025-03-14", auto_adjust=False)
 
-# ✅ Step 2: Fix MultiIndex Column Issue
+# ✅ Step 2: Ensure 'Close' Column Exists
 if isinstance(df.columns, pd.MultiIndex):
     df.columns = ['_'.join(col) if isinstance(col, tuple) else col for col in df.columns]
 
-df.rename(columns={
-    'Close_AAPL': 'Close',
-    'Open_AAPL': 'Open',
-    'High_AAPL': 'High',
-    'Low_AAPL': 'Low',
-    'Adj Close_AAPL': 'Adj Close',
-    'Volume_AAPL': 'Volume'
-}, inplace=True)
+df.rename(columns={'Close_TSLA': 'Close'}, inplace=True)
 
 print("Updated Columns in DataFrame:", df.columns.tolist())  # Debugging
 
-# ✅ Step 3: Ensure 'Close' Column Exists
 if 'Close' not in df.columns:
     print("❌ 'Close' column not found! Exiting.")
     exit()
 
-df['Close'] = df['Close'].ffill()  # Fill missing values
+df['Close'] = df['Close'].ffill()
 df.dropna(subset=['Close'], inplace=True)
 
-# ✅ Step 4: Convert 'Close' to a NumPy Array & Compute MACD
+# ✅ Step 3: Compute MACD
 df['macd'], df['signal'], df['hist'] = talib.MACD(df['Close'].astype(float).values.ravel(), fastperiod=12, slowperiod=26, signalperiod=9)
 
-# ✅ Step 5: Define Backtrader Data Feed
+# ✅ Step 4: Define Backtrader Data Feed
 class PandasDataMACD(bt.feeds.PandasData):
     lines = ('macd', 'signal', 'hist')
     params = (('macd', -1), ('signal', -1), ('hist', -1))
 
-# ✅ Step 6: Define MACD-Only Strategy
-class MACDOnlyStrategy(bt.Strategy):
+# ✅ Step 5: Define MACD Strategy with Fixed 20-Share Trades
+class MACDStrategy(bt.Strategy):
+    initial_cash = 10000  # Start with $10,000
+    cash = initial_cash
+    shares = 0
+    trade_size = 20  # Always trade 20 shares
+
     def __init__(self):
         self.macd_cross = bt.indicators.CrossOver(self.data.macd, self.data.signal)
 
     def next(self):
-        print(f"📌 Date: {self.data.datetime.date(0)} | MACD: {self.data.macd[0]:.2f} | Signal: {self.data.signal[0]:.2f} | Price: {self.data.close[0]:.2f}")
-        if not self.position and self.macd_cross > 0:
-            self.buy(size=100)
-            print(f"✅ BUY on {self.data.datetime.date(0)}, Price: {self.data.close[0]:.2f}")
-        elif self.position and self.macd_cross < 0:
-            self.sell(size=100)
-            print(f"❌ SELL on {self.data.datetime.date(0)}, Price: {self.data.close[0]:.2f}")
+        price = self.data.close[0]
 
-# ✅ Step 7: Run Backtrader
+        if self.macd_cross > 0:  # BUY SIGNAL
+            if self.cash >= price * self.trade_size:
+                self.shares += self.trade_size
+                self.cash -= price * self.trade_size
+                print(f"✅ BUY on {self.data.datetime.date(0)}, Price: {price:.2f}, Cash Left: ${self.cash:.2f}, Shares: {self.shares}")
+
+        elif self.macd_cross < 0:  # SELL SIGNAL
+            if self.shares >= self.trade_size:
+                self.shares -= self.trade_size
+                self.cash += price * self.trade_size
+                print(f"❌ SELL on {self.data.datetime.date(0)}, Price: {price:.2f}, Cash After Sale: ${self.cash:.2f}, Shares Left: {self.shares}")
+
+    def stop(self):
+        final_value = self.cash + (self.shares * self.data.close[0])
+        print(f"🔹 Final Portfolio Value (MACD Strategy) on 2025-03-14: ${final_value:.2f}")
+
+# ✅ Step 6: Run Backtrader Simulation
 cerebro = bt.Cerebro()
-cerebro.addstrategy(MACDOnlyStrategy)
+cerebro.addstrategy(MACDStrategy)
 data = PandasDataMACD(dataname=df)
 cerebro.adddata(data)
-cerebro.broker.setcash(100000.0)
 cerebro.run()
-cerebro.plot(style='candlestick', volume=False)
