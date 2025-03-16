@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Step 1: Download historical data for a stock (e.g., AAPL)
 ticker = "AAPL"
-df = yf.download(ticker, start="2023-01-01", end="2023-10-31", auto_adjust=False)
+df = yf.download(ticker, start="2020-01-01", end="2022-10-31", auto_adjust=False)
 
 
 # Flatten the DataFrame's columns in case they are MultiIndex or tuples
@@ -66,9 +66,9 @@ class TALibStrategy(bt.Strategy):
         # Create a crossover indicator: +1 when MACD crosses above Signal, -1 when below.
         self.cross = bt.indicators.CrossOver(self.macd, self.signal)
 
-    def next(self):
+    def to_do(self):
         if not self.position:
-            if self.cross[0] == 1 and self.rsi[0] < 70:
+            if self.cross[0] == 1 and self.rsi[0] < 30:
                 self.buy(size=100)
                 dt = self.data.datetime.date(0)
                 print(f"BUY on {dt}, Price: {self.data.close[0]:.2f}")
