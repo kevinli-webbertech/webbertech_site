@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
-import React from 'react';
-
+import React, { useState, useEffect } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
-  type MRT_ColumnDef,
+  MRT_ColumnDef,
 } from 'material-react-table';
+import { Button, TextField, Box, Paper } from '@mui/material';
 
 interface BankAccount {
   id: number;
@@ -23,50 +22,103 @@ interface BankAccount {
 const BankAccounts: React.FC = () => {
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-      fetch('http://localhost:5000/api/bank_accounts')
-        .then((response) => response.json())
-        .then((data: BankAccount[]) => {
-          console.log("Bank Accounts Data:", data);  // ✅ Log response to console
-          setAccounts(data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching bank accounts:", err);
-          setLoading(false);
-        });
-    }, []);
-
-
-  const columns = useMemo<MRT_ColumnDef<BankAccount>[]>(
-    () => [
-      { accessorKey: 'bank_name', header: 'Bank Name', size: 200 },
-      { accessorKey: 'account_name', header: 'Account Name', size: 200 },
-      { accessorKey: 'account_number', header: 'Account Number', size: 180 },
-      { accessorKey: 'routing_number', header: 'Routing Number', size: 180 },
-      { accessorKey: 'deposit_amount', header: 'Deposit Amount ($)', size: 150 },
-      { accessorKey: 'current_amount', header: 'Current Amount ($)', size: 150 },
-      { accessorKey: 'maturity_date', header: 'Maturity Date', size: 180 },
-      { accessorKey: 'current_rate', header: 'Current Rate (%)', size: 120 },
-      { accessorKey: 'comments', header: 'Comments', size: 250 },
-    ],
-    []
-  );
-
-  const table = useMaterialReactTable({
-    columns,
-    data: accounts,
-    state: { isLoading: loading },
-    enablePagination: true,
-    enableSorting: true,
-    enableColumnResizing: true,
-    enableColumnVirtualization: true,
-    enableRowNumbers: true,
-    muiTableContainerProps: { sx: { maxHeight: '600px' } },
+  const [newAccount, setNewAccount] = useState<Partial<BankAccount>>({
+    bank_name: '',
+    account_name: '',
+    account_number: '',
+    routing_number: '',
+    deposit_amount: 0,
+    current_amount: 0,
+    maturity_date: '',
+    current_rate: '',
+    comments: '',
   });
 
-  return <MaterialReactTable table={table} />;
+  // ✅ Fetch Bank Accounts from Backend
+  useEffect(() => {
+    fetch('http://localhost:5000/api/bank_accounts')
+      .then((response) => response.json())
+      .then((data: BankAccount[]) => {
+        setAccounts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching bank accounts:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  // ✅ Add New Bank Account (Matching SQL Schema)
+  const addAccount = async () => {
+    if (!newAccount.bank_name || !newAccount.account_name || !newAccount.account_number) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const response = await fetch('http://localhost:5000/api/bank_accounts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newAccount),
+    });
+
+    if (response.ok) {
+      setNewAccount({ bank_name: '', account_name: '', account_number: '', routing_number: '', deposit_amount: 0, current_amount: 0, maturity_date: '', current_rate: '', comments: '' });
+      fetch('http://localhost:5000/api/bank_accounts')
+        .then((res) => res.json())
+        .then(setAccounts);
+    }
+  };
+
+  // ✅ Delete Bank Account
+  const deleteAccount = async (id: number) => {
+    await fetch(`http://localhost:5000/api/bank_accounts/${id}`, { method: 'DELETE' });
+    setAccounts(accounts.filter((account) => account.id !== id));
+  };
+
+  // ✅ Table Columns (Matching SQL Schema)
+  const columns: MRT_ColumnDef<BankAccount>[] = [
+    { accessorKey: 'bank_name', header: 'Bank Name' },
+    { accessorKey: 'account_name', header: 'Account Name' },
+    { accessorKey: 'account_number', header: 'Account Number' },
+    { accessorKey: 'routing_number', header: 'Routing Number' },
+    { accessorKey: 'deposit_amount', header: 'Deposit Amount ($)' },
+    { accessorKey: 'current_amount', header: 'Current Amount ($)' },
+    { accessorKey: 'maturity_date', header: 'Maturity Date' },
+    { accessorKey: 'current_rate', header: 'Current Rate (%)' },
+    { accessorKey: 'comments', header: 'Comments' },
+    {
+      accessorKey: 'id',
+      header: 'Actions',
+      Cell: ({ cell }: { cell: any }) => (
+        <Button variant="contained" color="secondary" onClick={() => deleteAccount(cell.getValue() as number)}>
+          Delete
+        </Button>
+      ),
+    },
+  ];
+
+  return (
+    <Paper sx={{ padding: '20px' }}>
+      <h2>Bank Accounts</h2>
+
+      {/* ✅ Input Fields (Keep SQL Structure) */}
+      <Box sx={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
+        <TextField label="Bank Name" value={newAccount.bank_name} onChange={(e) => setNewAccount({ ...newAccount, bank_name: e.target.value })} />
+        <TextField label="Account Name" value={newAccount.account_name} onChange={(e) => setNewAccount({ ...newAccount, account_name: e.target.value })} />
+        <TextField label="Account Number" value={newAccount.account_number} onChange={(e) => setNewAccount({ ...newAccount, account_number: e.target.value })} />
+        <TextField label="Routing Number" value={newAccount.routing_number} onChange={(e) => setNewAccount({ ...newAccount, routing_number: e.target.value })} />
+        <TextField label="Deposit Amount" type="number" value={newAccount.deposit_amount} onChange={(e) => setNewAccount({ ...newAccount, deposit_amount: Number(e.target.value) })} />
+        <TextField label="Current Amount" type="number" value={newAccount.current_amount} onChange={(e) => setNewAccount({ ...newAccount, current_amount: Number(e.target.value) })} />
+        <TextField label="Maturity Date" value={newAccount.maturity_date} onChange={(e) => setNewAccount({ ...newAccount, maturity_date: e.target.value })} />
+        <TextField label="Current Rate" value={newAccount.current_rate} onChange={(e) => setNewAccount({ ...newAccount, current_rate: e.target.value })} />
+        <TextField label="Comments" value={newAccount.comments} onChange={(e) => setNewAccount({ ...newAccount, comments: e.target.value })} />
+        <Button variant="contained" color="primary" onClick={addAccount}>Add Account</Button>
+      </Box>
+
+      {/* ✅ Table Display */}
+      <MaterialReactTable columns={columns} data={accounts} state={{ isLoading: loading }} />
+    </Paper>
+  );
 };
 
 export default BankAccounts;
