@@ -4,14 +4,14 @@ import talib
 import backtrader as bt
 
 # ✅ Step 1: Download Data
-ticker = "TSLA"
+ticker = "NIO"
 df = yf.download(ticker, start="2020-01-01", end="2025-03-14", auto_adjust=False)
 
 # ✅ Step 2: Fix MultiIndex Column Issue
 if isinstance(df.columns, pd.MultiIndex):
     df.columns = ['_'.join(col) if isinstance(col, tuple) else col for col in df.columns]
 
-df.rename(columns={'Close_TSLA': 'Close'}, inplace=True)
+df.rename(columns={'Close_NIO': 'Close'}, inplace=True)
 
 print("Updated Columns in DataFrame:", df.columns.tolist())  # Debugging
 
@@ -22,9 +22,16 @@ if 'Close' not in df.columns:
 df['Close'] = df['Close'].ffill()
 df.dropna(subset=['Close'], inplace=True)
 
-# ✅ Step 3: Compute DMA (SMA 10-day & 50-day)
+# ✅ Step 3: Compute DMA (Displaced Moving Average)
 df['dma_short'] = talib.SMA(df['Close'].astype(float).values.ravel(), timeperiod=10)
 df['dma_long'] = talib.SMA(df['Close'].astype(float).values.ravel(), timeperiod=50)
+
+# ✅ Shift SMA values forward to create DMA
+df['dma_short'] = df['dma_short'].shift(5)  # 5-period displacement
+df['dma_long'] = df['dma_long'].shift(10)   # 10-period displacement
+
+# ✅ Drop NaN values due to shifting
+df.dropna(inplace=True)
 
 # ✅ Step 4: Define Backtrader Data Feed (Now Includes `dma_short` and `dma_long`)
 class PandasDataDMA(bt.feeds.PandasData):

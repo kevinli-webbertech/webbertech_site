@@ -4,56 +4,68 @@ import talib
 import backtrader as bt
 
 # ✅ Step 1: Download Data
-ticker = "AAPL"
-df = yf.download(ticker, start="2020-01-01", end="2022-10-31", auto_adjust=False)
+ticker = "NIO"
+df = yf.download(ticker, start="2020-01-01", end="2025-03-14", auto_adjust=False)
 
-# ✅ Step 2: Fix MultiIndex Column Issue
+# ✅ Step 2: Ensure 'Close' Column Exists
 if isinstance(df.columns, pd.MultiIndex):
     df.columns = ['_'.join(col) if isinstance(col, tuple) else col for col in df.columns]
 
-df.rename(columns={
-    'Close_AAPL': 'Close',
-    'Open_AAPL': 'Open',
-    'High_AAPL': 'High',
-    'Low_AAPL': 'Low',
-    'Adj Close_AAPL': 'Adj Close',
-    'Volume_AAPL': 'Volume'
-}, inplace=True)
+df.rename(columns={'Close_NIO': 'Close'}, inplace=True)
 
 print("Updated Columns in DataFrame:", df.columns.tolist())  # Debugging
 
-# ✅ Step 3: Ensure 'Close' Column Exists
 if 'Close' not in df.columns:
     print("❌ 'Close' column not found! Exiting.")
     exit()
 
-df['Close'] = df['Close'].ffill()  # Fill missing values
+df['Close'] = df['Close'].ffill()
 df.dropna(subset=['Close'], inplace=True)
 
-# ✅ Step 4: Convert 'Close' to a NumPy Array & Calculate RSI
+# ✅ Step 3: Compute RSI (Ensuring 1D NumPy Format)
 df['rsi'] = talib.RSI(df['Close'].astype(float).values.ravel(), timeperiod=14)
 
-# ✅ Step 5: Define Backtrader Data Feed
-class PandasDataExtended(bt.feeds.PandasData):
+# ✅ Step 4: Drop NaN Values to Prevent Index Issues
+df.dropna(inplace=True)
+
+# ✅ Step 5: Define Backtrader Data Feed (Now Includes `rsi`)
+class PandasDataRSI(bt.feeds.PandasData):
     lines = ('rsi',)
     params = (('rsi', -1),)
 
-# ✅ Step 6: Define RSI-Only Strategy
-class RSIOnlyStrategy(bt.Strategy):
-    def next(self):
-        print(f"📌 Date: {self.data.datetime.date(0)} | RSI: {self.data.rsi[0]:.2f} | Price: {self.data.close[0]:.2f}")
-        if not self.position and self.data.rsi[0] < 30:
-            self.buy(size=100)
-            print(f"✅ BUY on {self.data.datetime.date(0)}, Price: {self.data.close[0]:.2f}")
-        elif self.position and self.data.rsi[0] > 70:
-            self.sell(size=100)
-            print(f"❌ SELL on {self.data.datetime.date(0)}, Price: {self.data.close[0]:.2f}")
+# ✅ Step 6: Define RSI Strategy with Fixed 20-Share Trades
+class RSIStrategy(bt.Strategy):
+    initial_cash = 10000  # Start with $10,000
+    cash = initial_cash
+    shares = 0
+    trade_size = 20  # Always trade 20 shares
 
-# ✅ Step 7: Run Backtrader
+    def __init__(self):
+        pass
+
+    def next(self):
+        price = self.data.close[0]
+        portfolio_value = self.cash + (self.shares * price)  # ✅ Real-time Portfolio Value
+
+        if self.data.rsi[0] < 30:  # BUY SIGNAL (RSI oversold)
+            if self.cash >= price * self.trade_size:
+                self.shares += self.trade_size
+                self.cash -= price * self.trade_size
+                print(f"✅ BUY on {self.data.datetime.date(0)}, Price: {price:.2f}, Portfolio: ${portfolio_value:.2f}")
+
+        elif self.data.rsi[0] > 70:  # SELL SIGNAL (RSI overbought)
+            if self.shares >= self.trade_size:
+                self.shares -= self.trade_size
+                self.cash += price * self.trade_size
+                print(f"❌ SELL on {self.data.datetime.date(0)}, Price: {price:.2f}, Portfolio: ${portfolio_value:.2f}")
+
+    def stop(self):
+        final_value = self.cash + (self.shares * self.data.close[0])
+        print(f"🔹 Final Portfolio Value (RSI Strategy) on 2025-03-14: ${final_value:.2f}")
+
+# ✅ Step 7: Run Backtrader Simulation
 cerebro = bt.Cerebro()
-cerebro.addstrategy(RSIOnlyStrategy)
-data = PandasDataExtended(dataname=df)
+cerebro.addstrategy(RSIStrategy)
+data = PandasDataRSI(dataname=df)
 cerebro.adddata(data)
-cerebro.broker.setcash(100000.0)
 cerebro.run()
-cerebro.plot(style='candlestick', volume=False)
