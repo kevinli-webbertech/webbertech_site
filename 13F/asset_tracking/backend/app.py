@@ -14,8 +14,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-# ✅ Fetch all bank accounts (Fixing Missing Data Issue)
-@app.route('/api/bank_accounts', methods=['GET'])
+# ✅ Fetch all bank accounts
 @app.route('/api/bank_accounts', methods=['GET'])
 def get_bank_accounts():
     conn = get_db_connection()
@@ -26,7 +25,6 @@ def get_bank_accounts():
         return jsonify({"error": "No bank accounts found"}), 404
 
     return jsonify([dict(account) for account in accounts])
-
 
 # ✅ Add a new bank account
 @app.route('/api/bank_accounts', methods=['POST'])
@@ -66,7 +64,7 @@ def get_bonds():
 
     return jsonify([dict(bond) for bond in bonds])
 
-# ✅ Add new bond
+# ✅ Add a new bond
 @app.route('/api/bonds', methods=['POST'])
 def add_bond():
     data = request.get_json()
@@ -74,8 +72,9 @@ def add_bond():
     cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO bond (bond_name, bond_type, bond_term, amount, maturity_date, apy, platform, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (data.get('bond_name'), data.get('bond_type'), data.get('bond_term'), data.get('amount'),
-         data.get('maturity_date'), data.get('apy'), data.get('platform'), data.get('comment'))
+        (data.get('bond_name'), data.get('bond_type', 'Unknown'), data.get('bond_term'),
+         data.get('amount'), data.get('maturity_date'), data.get('apy', 0),
+         data.get('platform', 'N/A'), data.get('comment', ''))
     )
     conn.commit()
     conn.close()

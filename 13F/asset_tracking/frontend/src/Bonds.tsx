@@ -32,7 +32,7 @@ const Bonds: React.FC = () => {
     comment: '',
   });
 
-  // ✅ Fetch Bonds
+  // ✅ Fetch Bonds from API
   useEffect(() => {
     fetch('http://localhost:5000/api/bonds')
       .then((response) => response.json())
@@ -53,10 +53,21 @@ const Bonds: React.FC = () => {
       return;
     }
 
+    const bondData = {
+      bond_name: newBond.bond_name,
+      bond_type: newBond.bond_type || 'Unknown',
+      bond_term: newBond.bond_term,
+      amount: newBond.amount,
+      maturity_date: newBond.maturity_date || new Date().toISOString().split('T')[0],
+      apy: newBond.apy || 0,
+      platform: newBond.platform || 'N/A',
+      comment: newBond.comment || '',
+    };
+
     const response = await fetch('http://localhost:5000/api/bonds', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newBond),
+      body: JSON.stringify(bondData),
     });
 
     if (response.ok) {
@@ -64,6 +75,8 @@ const Bonds: React.FC = () => {
       fetch('http://localhost:5000/api/bonds')
         .then((res) => res.json())
         .then(setBonds);
+    } else {
+      console.error("Failed to add bond");
     }
   };
 
@@ -73,7 +86,7 @@ const Bonds: React.FC = () => {
     setBonds(bonds.filter((bond) => bond.id !== id));
   };
 
-  // ✅ Table Columns (Matching SQL)
+  // ✅ Table Columns
   const columns: MRT_ColumnDef<Bond>[] = [
     { accessorKey: 'bond_name', header: 'Bond Name' },
     { accessorKey: 'bond_type', header: 'Bond Type' },
@@ -98,16 +111,21 @@ const Bonds: React.FC = () => {
     <Paper sx={{ padding: '20px' }}>
       <h2>Bonds</h2>
 
-      {/* ✅ Input Fields (Keep SQL Structure) */}
-      <Box sx={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+      {/* ✅ Input Fields for Adding a Bond */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
         <TextField label="Bond Name" value={newBond.bond_name} onChange={(e) => setNewBond({ ...newBond, bond_name: e.target.value })} />
         <TextField label="Bond Type" value={newBond.bond_type} onChange={(e) => setNewBond({ ...newBond, bond_type: e.target.value })} />
         <TextField label="Bond Term" type="number" value={newBond.bond_term} onChange={(e) => setNewBond({ ...newBond, bond_term: Number(e.target.value) })} />
-        <TextField label="Amount ($)" type="number" value={newBond.amount} onChange={(e) => setNewBond({ ...newBond, amount: Number(e.target.value) })} />
-        <Button variant="contained" color="primary" onClick={addBond}>Add Bond</Button>
+        <TextField label="Maturity Date" type="date" value={newBond.maturity_date || ""} onChange={(e) => setNewBond({ ...newBond, maturity_date: e.target.value })} />
+        <TextField label="Maturity Date" type="date" value={newBond.maturity_date} onChange={(e) => setNewBond({ ...newBond, maturity_date: e.target.value })} />
+        <TextField label="APY (%)" type="number" value={newBond.apy} onChange={(e) => setNewBond({ ...newBond, apy: Number(e.target.value) })} />
+        <TextField label="Platform" value={newBond.platform} onChange={(e) => setNewBond({ ...newBond, platform: e.target.value })} />
+        <TextField label="Comment" value={newBond.comment} onChange={(e) => setNewBond({ ...newBond, comment: e.target.value })} />
       </Box>
 
-      {/* ✅ Table Display */}
+      <Button variant="contained" color="primary" onClick={addBond}>Add Bond</Button>
+
+      {/* ✅ Display Bonds in Table */}
       <MaterialReactTable columns={columns} data={bonds} state={{ isLoading: loading }} />
     </Paper>
   );
