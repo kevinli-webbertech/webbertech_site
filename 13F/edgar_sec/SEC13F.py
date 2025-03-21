@@ -113,11 +113,6 @@ class SEC13F:
         # `url: https://www.sec.gov/Archives/edgar/data/1350694/000117266125000823/0001172661-25-000823-index.htm`
         infotable_links = [link.get('href') for link in links if link.get('href').endswith('.xml')]
 
-<<<<<<< Updated upstream
-=======
-
-
->>>>>>> Stashed changes
         if not infotable_links or len(infotable_links) == 0:
             raise Exception("No XML files found.")
 
@@ -347,7 +342,7 @@ class SEC13F:
 
 if __name__ == "__main__":
     c = SEC13F()
-<<<<<<< Updated upstream
+
     companies = ['BHLB','Apple Inc.','UBS','META','COST',"AMERICAN EXPRESS CO","ABBOTT LABORATORIES "]
     for company in companies:
         print(c.cik_lookup(company))
@@ -359,11 +354,13 @@ if __name__ == "__main__":
 
 
     #c.aggregation_from_sec_xml("https://www.sec.gov/Archives/edgar/data/1350694/000117266125000823/infotable.xml")
-=======
+
     #start = time.time()
     #c.find_common_holdings_multi_cik(tuple(['1350694', '1067983', '1037389', '1610520']))
     #end = time.time()
     #print("function timing test:"+ str(end - start))
-    c.aggregation_from_sec_xml("https://www.sec.gov/Archives/edgar/data/1067983/000095012324011775/infotable.xml")
+   
+   
+   # c.aggregation_from_sec_xml("https://www.sec.gov/Archives/edgar/data/1067983/000095012324011775/infotable.xml")
 
->>>>>>> Stashed changes
+
