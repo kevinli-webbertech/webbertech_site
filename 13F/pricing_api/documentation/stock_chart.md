@@ -8,9 +8,9 @@ In a **bull market**, where prices are generally rising, certain candlestick pat
    - **Symbol:** A small bearish (red) candle followed by a larger bullish (green) candle that completely "engulfs" the previous candle.
    - **Meaning:** Indicates a potential reversal from a downtrend to an uptrend.
 
-![alt texts](image.png)
+![alt texts](candle_engulfing_pattern.png)
 
-![alt text](image-1.png)
+![alt text](candle_engulfing_strength.png)
 
 ---
 
@@ -18,7 +18,7 @@ In a **bull market**, where prices are generally rising, certain candlestick pat
    - **Symbol:** A small body at the top of the candle with a long lower wick (at least twice the length of the body).
    - **Meaning:** Suggests a potential reversal after a downtrend, as buyers step in to push prices higher.
 
-![alt text](image-2.png)
+![alt text](candle_hammer.png)
 
 ---
 
@@ -26,20 +26,20 @@ In a **bull market**, where prices are generally rising, certain candlestick pat
    - **Symbol:** A small body at the bottom of the candle with a long upper wick.
    - **Meaning:** Indicates potential bullish reversal after a downtrend, as buyers attempt to push prices higher.
 
-![alt text](image-3.png)
+![alt text](candle_shadow.png)
 ---
 
 ### **4. Morning Star**
    - **Symbol:** A three-candle pattern: a long bearish candle, a small-bodied candle (doji or spinning top), and a long bullish candle.
    - **Meaning:** Signals a reversal from a downtrend to an uptrend.
 
-![alt text](image-4.png)
+![alt text](candle_morning_star.png)
 ---
 
 ### **5. Piercing Line**
    - **Symbol:** A bearish candle followed by a bullish candle that closes above the midpoint of the previous candle's body.
    - **Meaning:** Indicates a potential bullish reversal.
-![alt text](image-5.png)
+![alt text](candle_1red_1green.png)
 ---
 
 ### **6. Three White Soldiers**
@@ -53,7 +53,7 @@ The size of the candles and the length of the shadow is used to judge whether th
 
 The opposite pattern of three white soldiers is three black crows, which indicates the reversal of an uptrend.
 
-![alt text](image-6.png)
+![alt text](candle_consecutive.png)
 
 ---
 
@@ -61,7 +61,7 @@ The opposite pattern of three white soldiers is three black crows, which indicat
    - **Symbol:** A large bearish candle followed by a smaller bullish candle completely contained within the body of the previous candle.
    - **Meaning:** Suggests a potential reversal or pause in a downtrend.
 
-![alt text](image-7.png)
+![alt text](candle_2red_1green.png)
 
 The chart above depicts a bullish harami. The first two black candles indicate a two-day downward trend in the asset, and the white candle represents a slightly upward trend on the third day, which is completely contained by the body of the previous candle. Investors seeing this bullish harami may be encouraged by this diagram, as it can signal a reversal in the market.
 
