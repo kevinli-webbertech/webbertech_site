@@ -2,7 +2,11 @@ from stock_api import *
 
 ## Blue chip
 
-get_current_price("goog")
+s = Stock("goog")
+
+s.get_current_price()
+s.daily_volume()
+"""
 get_current_price("msft")
 get_current_price("aapl")
 get_current_price("nvda")
@@ -23,3 +27,4 @@ get_current_price("moat")  # finance+healthcare
 get_current_price("schd") # high dividend sp500, 3%
 get_current_price("spy") # state street sp500
 get_current_price("gld") # state street gold ETF, gldm
+"""
