@@ -1,1 +1,0 @@
-# Write some python code to do the backtesting emulation
